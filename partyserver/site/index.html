@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./jquery.js"></script>
+    <script>
+        const webSocket = new WebSocket('ws://localhost:443/');
+
+        webSocket.onmessage = (event) => {
+        console.log(event)
+        document.getElementById('messages').innerHTML += 
+            'Message from server: ' + event.data + "<br>";
+        };
+
+        function sendMessage(obj) {
+            obj.date = Date.now();
+            webSocket.send(JSON.stringify(obj));
+        }
+
+    </script>
+</head>
+<body>
+    <h1 id="mywritenumber">4897</h1>
+    <input type="text"><button onclick="">Enter</button>
+    <div id="players"></div>
+    <div id="messages"></div>
+     <button onclick="sendMessage({})">Click me</button> 
+     
+</body>
+</html>

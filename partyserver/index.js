@@ -1,50 +1,51 @@
 const crypto = require('crypto');
 
+const mytools = require('./tools');
+const express = require('express')
 
 const port = 11100;
-const io = require('socket.io')();
-io.use((socket, next) => {
-    if (socket.handshake.query.token === "UNITY") {
-        next();
-    } else {
-        next(new Error("Authentication error"));
-    }
-});
+const WebSocket = require('ws')
 
-const socketArray = [];
-function findSocketindex(searchID) {
-  var _index = socketArray.find(
-    (element)=>{
-      return element.custom.gameID === searchID;
-    }
-  )
-  return(_index)
-}
+const app = express()
+const webserver = express().use((req, res) =>
+   res.sendFile('./site/index.html', { root: __dirname })
+ ) .listen(3000, () => console.log(`Listening on http://localhost:${3000}`));
 
-io.on('connection', socket => {
-  socket.emit('connection', {date: new Date().getTime(), data: "Hello Unity"})
-  socket.custom.gameID = crypto.randomUUID();
-  socketArray.push(socket);
-  console.log(`[CONNECTED] ${JSON.stringify(socketArray)}`)
+ const sockserver = new WebSocket.WebSocketServer({ port: 443 })
 
-  socket.on('hello', (data) => {
-    socket.emit('hello', {date: new Date().getTime(), data: data});
-  });
 
-  socket.on('spin', (data) => {
-    socket.emit('spin', {date: new Date().getTime()});
-  });
 
-  socket.on('class', (data) => {
-    socket.emit('class', {date: new Date().getTime(), data: data});
-  });
+ function newobj(_type,_eobj) {
+  var obj = {
+    type : _type,
+    date : Date.now()
+  };
+  Object.assign(obj,_eobj)
+  var str = JSON.stringify(obj);
+  return(str)
+ }
 
-  socket.on("disconnect", () => {
-    console.log(socket.id); // undefined
-    socketArray.splice(findSocketindex(socket.custom.gameID), 1);
-    console.log(`[DISCONNECTED] ${JSON.stringify(socketArray)}`)
-  });
-});
+ sockserver.broadcast = function(_type,obj) {
+  sockserver.clients.forEach(client => {
+    client.send(newobj(_type,obj))
+  })
+ }
 
-io.listen(port);
-console.log('listening on localhost:' + port);
+ sockserver.on('connection', ws => {
+  console.log('New client connected!')
+
+
+  ws.send(newobj("connected",{
+
+  }))
+  ws.on('close', () => console.log('Client has disconnected!'))
+  ws.on('message', data => {
+    var obj = JSON.parse(data);
+    console.log(`Incoming message: ${JSON.stringify(obj)}`)
+
+    sockserver.broadcast("message",obj);
+  })
+  ws.onerror = function () {
+    console.log('websocket error')
+  }
+ })

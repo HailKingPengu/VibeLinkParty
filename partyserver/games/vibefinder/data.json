@@ -1,0 +1,7 @@
+{
+    "questions": [
+        "Find a person that likes [interest].",
+        "Talk to a person about [subject].",
+        "Talk to someone named [name]."
+    ]
+}

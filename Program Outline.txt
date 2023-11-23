@@ -1,0 +1,51 @@
+
+CONNECTION INFO
+
+- num connected users
+- currently connected users IDs + info (for other games)
+
+
+know currently connected phones
+save them
+
+detect new connections
+save every new connection
+
+detect disconnecting phones
+remove them from list of connections
+
+
+COLOR GAME
+
+- preset list of possible distinguishable colours
+- preset group size
+
+- colours groups
+	- single user data
+		- bool if connected
+		- reference to user
+
+check for all groups if all colours are connected
+(max players will never exceed the point where this is an expensive operation (1000+ players))
+
+
+HOW CHECK COLOURS
+
+code
+
+- one group leader who has to scan everyone
+- everyone has to scan everyone
+- every person has to at least make sure all players are connected in at least one way
+
+
+
+
+
+
+
+
+
+
+
+
+if player disconnects during game, trouble

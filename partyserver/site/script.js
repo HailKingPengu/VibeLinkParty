@@ -116,6 +116,12 @@ function createPlayerlist(list){
     })
 }
 
+function sendConnectPlayers() {
+    var enteredvalue = $('#connecttext').val();
+    console.log(enteredvalue);
+    $('#connecttext').val('');
+    sendMessage({type:"playerconnect",search:enteredvalue})
+}
 
 
 function overlayActivate() {

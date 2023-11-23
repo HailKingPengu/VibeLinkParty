@@ -18,7 +18,8 @@ function debugGetLikelist(dictionary) {
 const peoplelikes = debugGetLikelist(mockupData.tags);
 
 const port = 11100;
-const WebSocket = require('ws')
+const WebSocket = require('ws');
+const { Console } = require('console');
 
 const app = express()
 app.use(express.static('site'));
@@ -58,6 +59,9 @@ app.listen(3000, () => console.log(`Listening on http://localhost:${3000}`));
     switch(obj.type){
       case "login":
         loginuser(ws,obj);
+      break;
+      case "playerconnect":
+        playerConnects(ws,obj);
       break;
     }
     //sockserver.broadcast("message",obj);
@@ -115,15 +119,32 @@ const playerIdLength = 4;
   return(_id)
  }
  function getplayerbyID(theid) {
+  var val = undefined;
   sockserver.clients.forEach(client => {
-    if(client.data.id == theid){
-      return(client)
+    
+    var trueness = client.data.id === theid;
+    console.log(trueness)
+    if(trueness){
+      val = client
     }
   });
-  return(undefined)
+  return(val)
  }
 
  function choose(choices) {
   var index = Math.floor(Math.random() * choices.length);
   return choices[index];
+}
+
+function playerConnects(ws,obj) {
+  var search = getplayerbyID(obj.search);
+  if(search!=undefined){
+    var issame = ws === search;
+    if(!issame){
+
+      // do actions when connecting to players
+      console.log("ACTION")
+
+    }
+  }
 }

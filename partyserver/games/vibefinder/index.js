@@ -3,8 +3,7 @@ const gamedata = require('./data.json');
 
 class game {
     constructor(C) {
-      this.height = height;
-      this.width = width;
+      this.scores = {};
     }
   }
 module.exports = game;

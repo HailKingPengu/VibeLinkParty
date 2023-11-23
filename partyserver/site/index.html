@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="./style.css"></link>
     <script src="./jquery.js"></script>
     <script src="./script.js"></script>
 </head>
@@ -15,6 +16,15 @@
     </main>
     <div id="messages"></div>
     <button onclick="sendMessage({})">Click me</button> 
-     
+     <div id="overlay">
+        <div class="sendInfo">
+            <label for="name">Whats your name?</label><br>
+            <input id="myname" type="text"><br>
+            <label for="likes">What do you like?</label><br>
+            <div id="mylikeslist"><p id="mylistlikes"></p></div><br>
+            <br>
+            <button onclick="goServer()">Join Party</button>
+        </div>
+     </div>
 </body>
 </html>

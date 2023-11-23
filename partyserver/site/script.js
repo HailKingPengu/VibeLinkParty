@@ -5,20 +5,28 @@ $(document).ready(onStart)
 
 
 webSocket = undefined
-
+allgamestoplay = [];
 recommendedlikes = ["games","movies","anime","baking"];
 keyobject = {};
 const mylikes = [];
+var likeonline = localStorage.getItem('mylikes').split(",")
+console.log(likeonline)
+if(likeonline.length>2){
+    likeonline.forEach((element)=>{
+        mylikes.push(element)
+    })
+}
 myname = "";
 myid = "";
-
+isadmin = false;
+isplayinggame = false;
 
 // SERVER STUFF
 function goServer () {
     if(webSocket != undefined){return("You are already connected")}
     if(mylikes.length<3){return("Choose more likes")}
 
-        webSocket = new WebSocket('ws://localhost:443/');
+        webSocket = new WebSocket(`ws://${window.location.hostname}:443/`);
         webSocket.onmessage = onMessage;
         console.log(webSocket)
         overlayDeactivate()
@@ -36,8 +44,18 @@ function onMessage(event) {
         break;
         case "playerlist":
             myid = obj.myid;
+            allgamestoplay = obj.games;
+            playingGame = obj.playingGame;
+            isplayinggame = obj.playingGame;
+            toggleAdmin(obj.isadmin)
             $('#mywritenumber').text(myid);
-            createPlayerlist(obj.list);
+            createPlayerlist(obj.list,isplayinggame);
+        break;
+        case "startgame":
+            createPlayerlist(obj.list,isplayinggame);
+        break;
+        case "update":
+            createPlayerlist(obj.list,isplayinggame);
         break;
     }
 }
@@ -45,6 +63,7 @@ function onMessage(event) {
 function sendLoginData () {
 
     myname = $('#myname').val();
+    localStorage.setItem('mylikes', mylikes);
     sendMessage({
         type : "login",
         likes : mylikes,
@@ -54,6 +73,7 @@ function sendLoginData () {
 
 
 function onStart() {
+    writelikes()
     console.log("started")
 
     $.getJSON("./mockup.json",function(obj){
@@ -70,22 +90,23 @@ function onStart() {
     
 
 }
+function writelikes(){
+    var txtlist = ""
+    mylikes.forEach((element)=>{
+        txtlist = txtlist+element+", "
+    })
 
+    $('#mylistlikes').text(txtlist)
+}
 function createlikeButton(thelike){
     var obj = $('#mylikeslist').append(
         `<button class="likeslistitem">${thelike}</button>`
     )
     $(`.likeslistitem:contains('${thelike}')`).on( "click",(eventData) =>{
         mylikes.push(thelike)
-
-
         $(eventData.currentTarget).remove()
-        var txtlist = ""
-        mylikes.forEach((element)=>{
-            txtlist = txtlist+element+", "
-        })
 
-        $('#mylistlikes').text(txtlist)
+        writelikes();
 
         // if its a category
         if(keyobject.hasOwnProperty(thelike)){
@@ -102,14 +123,16 @@ function sendMessage(obj) {
     webSocket.send(JSON.stringify(obj));
 }
 
-function createPlayerlist(list){
+function createPlayerlist(list,showscores = false){
     $('#players').empty();
 
     list.forEach((element)=>{
-        console.log(element)
+
+        var score = ""
+        if(showscores){score = `[ ${element.score} ]`}
         $('#players').append(
             `<div class='player' style="background-color:${element.color};">
-                <h2>${element.name}</h2>
+                <h2>${element.name} ${score}</h2>
             </div>
             `
         )
@@ -131,3 +154,32 @@ function overlayActivate() {
   function overlayDeactivate() {
     document.getElementById("overlay").style.display = "none";
   } 
+
+  function toggleAdmin(admin = !isadmin) {
+    isadmin = admin;
+
+    $('.admin').remove();
+    if(isadmin){
+        // is admin
+
+        
+        var str = ``;
+        if(!playingGame){
+            allgamestoplay.forEach((elem)=>{
+                str = str+`<button onClick="startGame('${elem}')">
+                <h3>${elem}</h3>
+            </button>`
+            })
+        }
+        var admincontainer = `
+        <div class="admin">
+            ${str}
+        </div>
+        `
+        $('main').prepend(admincontainer);
+    }
+  }
+
+function startGame (gamename) {
+    sendMessage({type:"startgame",game:gamename})
+}

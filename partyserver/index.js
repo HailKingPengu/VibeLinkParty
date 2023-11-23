@@ -4,6 +4,11 @@ const mytools = require('./tools');
 const express = require('express')
 const mockupData = require('./site/mockup.json');
 
+const allgames = require('./games');
+
+playingGame = undefined;
+
+
 
 function debugGetLikelist(dictionary) {
   Object.keys(dictionary).forEach(function(key) {
@@ -44,10 +49,16 @@ app.listen(3000, () => console.log(`Listening on http://localhost:${3000}`));
     client.send(newobj(_type,obj))
   })
  }
-
+ sockserver.updateGame = function() {
+  sockserver.broadcast("update",{
+    list: playerlist()
+  })
+ }
  sockserver.on('connection', ws => {
   ws.data = {}
   ws.data.id ='';
+  ws.data.score = 0; 
+  ws.data.isadmin = false;
   console.log('New client connected!')
 
 
@@ -63,6 +74,17 @@ app.listen(3000, () => console.log(`Listening on http://localhost:${3000}`));
       case "playerconnect":
         playerConnects(ws,obj);
       break;
+      case "startgame":
+        playingGame = new allgames.games[0].game(sockserver); // CHANGE THIS LATER
+
+        var obj = {
+          list : playerlist(),
+          gamename: allgames.games[0].name
+        };
+
+        sockserver.broadcast("startgame",obj)
+      break;
+      
     }
     //sockserver.broadcast("message",obj);
   })
@@ -78,13 +100,20 @@ app.listen(3000, () => console.log(`Listening on http://localhost:${3000}`));
     ws.data.likes = obj.likes;
     ws.data.color = choose(['red','green','blue','purple'])
     ws.data.id = generatePlayerID();
-    console.log(ws.data)
-
-
+    ws.data.score = 0;
+    var isfirst = sockserver.clients.size<=1;
+    ws.data.isadmin = isfirst;
 
 
     sockserver.clients.forEach(client => {
-      client.send(newobj("playerlist",{list:playerlist(),myid:client.data.id}))
+      var obj = {list:playerlist(),myid:client.data.id,isadmin:client.data.isadmin,playingGame:(playingGame!==undefined)};
+      if(client.data.isadmin){
+        obj.games = [];
+        allgames.games.forEach((elem)=>{
+          obj.games.push(elem.name)
+        })
+      }
+      client.send(newobj("playerlist",obj))
     })
 
  }
@@ -95,7 +124,8 @@ app.listen(3000, () => console.log(`Listening on http://localhost:${3000}`));
     var obj = {
       name: client.data.name,
       color: client.data.color,
-      id: client.data.id
+      id: client.data.id,
+      score: client.data.score
     }
     list.push(obj);
   })
@@ -144,7 +174,9 @@ function playerConnects(ws,obj) {
 
       // do actions when connecting to players
       console.log("ACTION")
-
+      if(playingGame){
+        playingGame.onPlayerConnect(ws,obj,search)
+      }
     }
   }
 }

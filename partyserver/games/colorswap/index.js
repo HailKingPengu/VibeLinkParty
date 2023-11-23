@@ -11,10 +11,7 @@ class game {
 
     }
     onPlayerConnect (client,obj,searched) {
-      client.data.score++;
-      searched.data.score++
 
-      this.socket.updateGame();
     }
     onLeave (client,obj) {
 

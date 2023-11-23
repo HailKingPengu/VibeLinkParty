@@ -7,9 +7,8 @@ const port = 11100;
 const WebSocket = require('ws')
 
 const app = express()
-const webserver = express().use((req, res) =>
-   res.sendFile('./site/index.html', { root: __dirname })
- ) .listen(3000, () => console.log(`Listening on http://localhost:${3000}`));
+app.use(express.static('site'));
+app.listen(3000, () => console.log(`Listening on http://localhost:${3000}`));
 
  const sockserver = new WebSocket.WebSocketServer({ port: 443 })
 
@@ -35,9 +34,7 @@ const webserver = express().use((req, res) =>
   console.log('New client connected!')
 
 
-  ws.send(newobj("connected",{
-
-  }))
+  ws.send(newobj("connected",{}))
   ws.on('close', () => console.log('Client has disconnected!'))
   ws.on('message', data => {
     var obj = JSON.parse(data);
@@ -49,3 +46,4 @@ const webserver = express().use((req, res) =>
     console.log('websocket error')
   }
  })
+

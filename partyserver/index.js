@@ -1,5 +1,7 @@
 const crypto = require('crypto');
 
+const { choose } = require('./tools')
+
 const mytools = require('./tools');
 const express = require('express')
 const mockupData = require('./site/mockup.json');
@@ -161,10 +163,7 @@ const playerIdLength = 4;
   return(val)
  }
 
- function choose(choices) {
-  var index = Math.floor(Math.random() * choices.length);
-  return choices[index];
-}
+
 
 function playerConnects(ws,obj) {
   var search = getplayerbyID(obj.search);

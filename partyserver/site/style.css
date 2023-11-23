@@ -20,3 +20,14 @@
     width: 50%;
     padding: 10px;
 }
+
+#messages {
+    height: 40vh;
+    overflow-x: visible;
+    overflow-x: scroll;
+    display: flex;
+   /* flex-direction: column-reverse;*/
+}
+#messages:not(.show) {
+    visibility: hidden;
+}

@@ -1,4 +1,22 @@
 
+body {
+    padding: 0px;
+    margin: 0px;
+
+    font-family: 'Jockey One', sans-serif;
+
+    font-family: 'Open Sans', sans-serif;
+
+    font-family: 'Poppins', sans-serif;
+
+
+    background-color: #F0DDB4;
+    width: 100vw;
+
+    overflow: hidden;
+    
+}
+
 #overlay {
     position: fixed; /* Sit on top of the page content */
     display: none; /* Hidden by default */
@@ -8,16 +26,14 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0,0,0,1); /* Black background with opacity */
+    background-color: #F0DDB4; /* Black background with opacity */
     color:aliceblue;
     z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
-    cursor: pointer; /* Add a pointer on hover */
+    cursor:auto; /* Add a pointer on hover */
   }
 
 .sendInfo {
-    border: 5px solid;
     margin: auto;
-    width: 50%;
     padding: 10px;
 }
 
@@ -31,6 +47,107 @@
     visibility: hidden;
 }
 
-#gamebar {
+header {
+
+    left: 0;
+    top: 0;
+    width: 100%;  
     background-color: gray;
+
+    
+    align-items: center;
+    text-align: center;
+
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+
+    position: sticky;
+    margin-bottom: 20px;
+}
+header * {
+    display:inline-block;
+}
+#gamebar {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+
+    padding-bottom: 30px;
+
+    background-color: gray;
+
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+
+    text-align: center;
+}
+
+
+#likecontainer {
+    max-width: 600px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-wrap: wrap;
+
+}
+#mylikeslist {
+    max-width: 600px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-wrap: wrap;   
+}
+.like {
+    color: black;
+    font-size: 1rem;
+    margin: 5px;
+    width: min-content;
+    height: 30px;
+    flex-basis: 0;
+    background-color: #E6AF3F;
+    border-radius: 8px;
+    font-weight: 1000;
+    flex-basis: fit-content;
+
+    vertical-align: middle;
+
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.likeslistitem {
+    color: black;
+    border: 0px;
+    font-size: 1rem;
+    margin: 5px;
+    width: min-content;
+    height: 30px;
+    flex-basis: 0;
+    background-color: #3D80DF;
+    border-radius: 8px;
+    font-weight: 1000;
+    flex-basis: fit-content;
+
+    padding-right: 10px;
+    padding-left: 10px;
+    vertical-align: middle;
+}
+
+.likeslistitem:hover{
+    background-color: #90beff;
+    cursor:pointer;
+}
+
+
+.like.shared-like {
+    background-color: #DE476F;
+}
+
+#players .player {
+    margin: 10px;
+    padding-left: 10px;
+    border-radius: 8px;
+    
 }

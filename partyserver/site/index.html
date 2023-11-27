@@ -4,18 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Jockey+One&family=Open+Sans:wght@300&family=Poppins:wght@500&display=swap');
+     </style> 
     <link rel="stylesheet" href="./style.css"></link>
     <script src="./jquery.js"></script>
     <script src="./script.js"></script>
 </head>
 <body>
-    <head>
+    <header>
         <div>
             <h1 id="mywritenumber">4897</h1>
-            <input id="connecttext" type="text"><button onclick="sendConnectPlayers()">Enter</button>
+            <input id="connecttext" type="number"><button onclick="sendConnectPlayers()">Enter</button>
         </div>
 
-    </head>
+    </header>
     <main>
         <div class="admin">
 
@@ -52,6 +56,8 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
       
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-analytics.js";
+
+        import { getAuth,connectAuthEmulator,signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-auth.js";
       
         // TODO: Add SDKs for Firebase products that you want to use
       
@@ -88,5 +94,6 @@
         const analytics = getAnalytics(app);
       
       </script>
+      <script></script>
 </body>
 </html>

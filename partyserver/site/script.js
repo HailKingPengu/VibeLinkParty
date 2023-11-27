@@ -94,12 +94,13 @@ function onStart() {
 
 }
 function writelikes(){
-    var txtlist = ""
+    var txtlist = `<div id="likecontainer">`
     mylikes.forEach((element)=>{
-        txtlist = txtlist+element+", "
+        txtlist = txtlist+`<div class="like">${element}</div>`
     })
+    txtlist = txtlist+'</div>'
 
-    $('#mylistlikes').text(txtlist)
+    $('#mylistlikes').html(txtlist)
 }
 function createlikeButton(thelike){
     var obj = $('#mylikeslist').append(

@@ -120,7 +120,7 @@ app.listen(appPort, () => console.log(`Listening on http://localhost:${appPort}`
   ws.data = {}
     ws.data.name = obj.name;
     ws.data.likes = obj.likes;
-    ws.data.color = choose(['red','green','blue','purple'])
+    ws.data.color = choose(['#E6AF3F','#DE476F','#3D80DF','#D9D9D9'])
     ws.data.id = generatePlayerID();
     ws.data.score = 0;
     var isfirst = sockserver.clients.size<=1;

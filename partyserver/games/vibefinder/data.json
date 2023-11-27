@@ -1,7 +1,13 @@
 {
     "questions": [
         "Find a person that likes [interest].",
-        "Talk to a person about [subject].",
-        "Talk to someone named [name]."
+        "Talk to a person about [interest].",
+        "Talk to a person about [subject]."
+    ],
+    "subjects":[
+        "politics",
+        "the last series you've watched",
+        "the last game you've played",
+        "what you think the best movie is"
     ]
 }

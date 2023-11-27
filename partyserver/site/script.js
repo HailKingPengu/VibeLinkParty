@@ -26,7 +26,7 @@ function goServer () {
     if(webSocket != undefined){return("You are already connected")}
     if(mylikes.length<3){return("Choose more likes")}
 
-        webSocket = new WebSocket(`ws://${window.location.hostname}:443/`);
+        webSocket = new WebSocket(`ws://${window.location.hostname}:3001/`);
         webSocket.onmessage = onMessage;
         console.log(webSocket)
         overlayDeactivate()
@@ -57,6 +57,9 @@ function onMessage(event) {
         case "update":
             createPlayerlist(obj.list,isplayinggame);
         break;
+        case "game":
+            CreateGameBar(obj)
+        break;
     }
 }
 
@@ -84,7 +87,7 @@ function onStart() {
             createlikeButton(element)
         })
     })
-
+    CreateGameBar()
     overlayActivate();
     
     
@@ -185,3 +188,22 @@ function startGame (gamename) {
 }
 
 
+function CreateGameBar (boxinfo = {}) {
+    var createbarfrominfo = function (info) {
+        console.log(info.list);
+        for (let index = 0; index < info.list.length; index++) {
+            const element = info.list[index];
+            if(element.type =="txt"){
+                $('#gamebar').append(`<h3>${element.txt}</h3>`)
+            }
+        }
+    }
+
+    $('#gamebar').empty();
+    if(Object.keys(boxinfo).length===0)
+    {
+        $('#gamebar').append('<h3>No game information</h3>')
+    }else{
+        createbarfrominfo(boxinfo)
+    }
+}

@@ -28,11 +28,14 @@ const port = 11100;
 const WebSocket = require('ws');
 const { Console } = require('console');
 
+const appPort = 3000;
+const websockPort = 3001;
+
 const app = express()
 app.use(express.static('site'));
-app.listen(3000, () => console.log(`Listening on http://localhost:${3000}`));
+app.listen(appPort, () => console.log(`Listening on http://localhost:${appPort}`));
 
- const sockserver = new WebSocket.WebSocketServer({ port: 443 })
+ const sockserver = new WebSocket.WebSocketServer({ port: websockPort })
 
 
 
@@ -56,13 +59,25 @@ app.listen(3000, () => console.log(`Listening on http://localhost:${3000}`));
     list: playerlist()
   })
  }
+
+ sockserver.getAllInterests = function(){
+  var allarr = []
+  sockserver.clients.forEach(client => {
+    allarr = allarr.concat(client.data.likes.filter((item) => allarr.indexOf(item) < 0)); 
+  })
+  return(allarr)
+ }
+
  sockserver.on('connection', ws => {
   ws.data = {}
   ws.data.id ='';
   ws.data.score = 0; 
   ws.data.isadmin = false;
+  ws.data.likes = [];
   console.log('New client connected!')
-
+  ws.sendGame = function(obj){
+    ws.send(newobj("game",obj))
+  }
 
   ws.send(newobj("connected",{likes:mockupData.likes}))
   ws.on('close', () => console.log('Client has disconnected!'))
@@ -72,19 +87,24 @@ app.listen(3000, () => console.log(`Listening on http://localhost:${3000}`));
     switch(obj.type){
       case "login":
         loginuser(ws,obj);
+        if(playingGame){
+          playingGame.onJoin(ws,obj)
+        }
+
       break;
       case "playerconnect":
         playerConnects(ws,obj);
       break;
       case "startgame":
         playingGame = new allgames.games[0].game(sockserver); // CHANGE THIS LATER
-
+        playingGame.socket = sockserver;
         var obj = {
           list : playerlist(),
           gamename: allgames.games[0].name
         };
-
+        playingGame.onStart();
         sockserver.broadcast("startgame",obj)
+
       break;
       
     }

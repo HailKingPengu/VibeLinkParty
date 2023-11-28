@@ -28,6 +28,12 @@ class game {
 
 
       this.socket.updateGame();
+
+      searched.data.quest = givePersonQuest(this.alllikes);
+      searched.sendGame({list:[{type:"txt",txt:searched.data.quest}]});
+
+      client.data.quest = givePersonQuest(this.alllikes);
+      client.sendGame({list:[{type:"txt",txt:client.data.quest}]});
     }
     onLeave (client,obj) {
 

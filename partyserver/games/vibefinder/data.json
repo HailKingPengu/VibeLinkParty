@@ -6,8 +6,16 @@
     ],
     "subjects":[
         "politics",
-        "the last series you've watched",
+        
         "the last game you've played",
-        "what you think the best movie is"
+        
+        "what you think the best movie is",
+        "the last series you've watched",
+
+        "your favourite artist",
+        "The most recent album that blew you away",
+
+        "the most underrated sport",
+        "the most overrated sport"
     ]
 }

@@ -6,6 +6,7 @@ $(document).ready(onStart)
 
 webSocket = undefined
 allgamestoplay = [];
+allrecommendedlikes = []
 recommendedlikes = ["games","movies","anime","baking"];
 keyobject = {};
 const mylikes = [];
@@ -80,16 +81,22 @@ function onStart() {
     console.log("started")
 
     $.getJSON("./mockup.json",function(obj){
-        recommendedlikes = obj.tags.general;
+        allrecommendedlikes = obj.tags.general;
+        recommendedlikes = allrecommendedlikes;
         keyobject = obj.tags;
         recommendedlikes.sort();
+        recommendedlikes = excludeArrays(recommendedlikes,mylikes);
         recommendedlikes.forEach((element)=> {
             createlikeButton(element)
         })
     })
     CreateGameBar()
     overlayActivate();
-    
+    $(document).on('keypress',function(e) {
+        if(e.which == 13 && webSocket) {
+            sendConnectPlayers();
+        }
+    });
     
 
 }
@@ -207,4 +214,37 @@ function CreateGameBar (boxinfo = {}) {
     }else{
         createbarfrominfo(boxinfo)
     }
+}
+
+
+function mergeArrays (arrayOld) { // returns an array without duplicates
+    let arraynew = [];
+    arrayOld.forEach((element) => {
+    if (!arraynew.includes(element)) {
+        arraynew.push(element);
+    }
+});
+return(arraynew)
+}
+
+function excludeArrays (arrayOld,exclude) { // returns an array without duplicates and excludes
+    let arraynew = [];
+    arrayOld.forEach((element) => {
+    if (!arraynew.includes(element) && !exclude.includes(element)) {
+        arraynew.push(element);
+    }
+});
+return(arraynew)
+}
+
+
+function clearLikes() {
+    mylikes.length = 0;
+    writelikes();
+    recommendedlikes = allrecommendedlikes;
+    recommendedlikes.sort();
+    $('.likeslistitem').remove();
+    recommendedlikes.forEach((element)=> {
+        createlikeButton(element)
+    })
 }

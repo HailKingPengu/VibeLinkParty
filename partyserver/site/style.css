@@ -1,4 +1,6 @@
-
+* {
+    font-size: 1rem;
+}
 body {
     padding: 0px;
     margin: 0px;
@@ -13,10 +15,13 @@ body {
     background-color: #F0DDB4;
 
     overflow: hidden;
+
+
     
 }
 
 #overlay {
+
     position: fixed; /* Sit on top of the page content */
     display: none; /* Hidden by default */
     width: 100%; /* Full width (cover the whole page) */
@@ -48,6 +53,7 @@ body {
 
 header {
 
+    position: fixed;
     left: 0;
     top: 0;
     width: 100%;  
@@ -64,13 +70,15 @@ header {
     margin-bottom: 20px;
 }
 header * {
+    font-size: 2rem;
     display:inline-block;
 }
+
 #gamebar {
     position: fixed;
     left: 0;
     bottom: 0;
-    width: 100vw;
+    width: 100%;
 
     padding-bottom: 30px;
 
@@ -80,6 +88,7 @@ header * {
     border-top-right-radius: 20px;
 
     text-align: center;
+    font-size: 2rem;
 }
 
 
@@ -149,6 +158,7 @@ header * {
     margin: 10px;
     padding-left: 10px;
     border-radius: 8px;
+    font-size: 2rem;
     
 }
 
@@ -184,3 +194,4 @@ button:hover {
 header button {
     background-color: #F0DDB4;
 }
+

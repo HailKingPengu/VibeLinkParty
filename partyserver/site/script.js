@@ -203,6 +203,9 @@ function CreateGameBar (boxinfo = {}) {
             const element = info.list[index];
             if(element.type =="txt"){
                 $('#gamebar').append(`<h3>${element.txt}</h3>`)
+            }else
+            if(element.type =="block"){
+                $('#gamebar').append(`<div class="funblock" style="background-color: ${element.color};"><h3>${element.txt}</h3></div>`)
             }
         }
     }

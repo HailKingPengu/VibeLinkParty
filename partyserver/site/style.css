@@ -159,8 +159,15 @@ header * {
     padding-left: 10px;
     border-radius: 8px;
     font-size: 2rem;
+    padding-top: 10px;
+    padding-bottom: 10px;
     
 }
+
+#players .player:last-child {
+    margin-bottom: 200px;
+  }
+  
 
 input {
     background-color: #E6AF3F;

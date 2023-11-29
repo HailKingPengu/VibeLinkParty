@@ -9,12 +9,13 @@ allgamestoplay = [];
 allrecommendedlikes = []
 recommendedlikes = ["games","movies","anime","baking"];
 keyobject = {};
-const mylikes = [];
-var likeonline = localStorage.getItem('mylikes').split(",")
+window.mylikes = [];
+likeonline = []
+//var likeonline = localStorage.getItem('window.mylikes').split(",")
 console.log(likeonline)
 if(likeonline.length>2){
     likeonline.forEach((element)=>{
-        mylikes.push(element)
+        window.mylikes.push(element)
     })
 }
 myname = "";
@@ -22,13 +23,25 @@ myid = "";
 isadmin = false;
 isplayinggame = false;
 
+port = 8081;
+protocol = 'ws'
+
+window.myUID = undefined
+
 // SERVER STUFF
+
 function goServer () {
     if(webSocket != undefined){return("You are already connected")}
-    if(mylikes.length<3){return("Choose more likes")}
+    if(window.mylikes.length<3){return("Choose more likes")}
+        var wport = `:${window.location.port}`; if(protocol=="wss"){wport = ""}
+        var wsip = `${protocol}://${window.location.hostname}${wport}`
 
-        webSocket = new WebSocket(`ws://${window.location.hostname}:3001/`);
+        console.log(wsip);
+        webSocket = new WebSocket(wsip);
         webSocket.onmessage = onMessage;
+        webSocket.onclose = (event) => {
+            console.log("DISCONNected");
+          };
         console.log(webSocket)
         overlayDeactivate()
         return("")
@@ -67,10 +80,10 @@ function onMessage(event) {
 function sendLoginData () {
 
     myname = $('#myname').val();
-    localStorage.setItem('mylikes', mylikes);
+    localStorage.setItem('window.mylikes', window.mylikes);
     sendMessage({
         type : "login",
-        likes : mylikes,
+        likes : window.mylikes,
         name : myname
     })
 }
@@ -80,12 +93,19 @@ function onStart() {
     writelikes()
     console.log("started")
 
+    $.getJSON("./temp.json",function(obj){
+
+        port = obj.port;
+        protocol = obj.protocol;
+        console.log(`port: ${obj.port}`)
+    })
+
     $.getJSON("./mockup.json",function(obj){
         allrecommendedlikes = obj.tags.general;
         recommendedlikes = allrecommendedlikes;
         keyobject = obj.tags;
         recommendedlikes.sort();
-        recommendedlikes = excludeArrays(recommendedlikes,mylikes);
+        recommendedlikes = excludeArrays(recommendedlikes,window.mylikes);
         recommendedlikes.forEach((element)=> {
             createlikeButton(element)
         })
@@ -97,12 +117,14 @@ function onStart() {
             sendConnectPlayers();
         }
     });
-    
+    $('#joinaserver').on('click',()=>{
+        goServer()
+    })
 
 }
 function writelikes(){
     var txtlist = `<div id="likecontainer">`
-    mylikes.forEach((element)=>{
+    window.mylikes.forEach((element)=>{
         txtlist = txtlist+`<div class="like">${element}</div>`
     })
     txtlist = txtlist+'</div>'
@@ -114,7 +136,7 @@ function createlikeButton(thelike){
         `<button class="likeslistitem">${thelike}</button>`
     )
     $(`.likeslistitem:contains('${thelike}')`).on( "click",(eventData) =>{
-        mylikes.push(thelike)
+        window.mylikes.push(thelike)
         $(eventData.currentTarget).remove()
 
         writelikes();
@@ -242,7 +264,7 @@ return(arraynew)
 
 
 function clearLikes() {
-    mylikes.length = 0;
+    window.mylikes.length = 0;
     writelikes();
     recommendedlikes = allrecommendedlikes;
     recommendedlikes.sort();
@@ -251,3 +273,17 @@ function clearLikes() {
         createlikeButton(element)
     })
 }
+
+function addCustomLike(){
+    var newlike = $('#mylikecustominput').val();
+    $('#mylikecustominput').val("");
+    newlike = newlike.toLowerCase();
+
+    if(newlike===""){return;}
+    if(window.mylikes.includes(newlike)){return;}
+
+    window.mylikes.push(newlike)
+    writelikes();
+
+}
+

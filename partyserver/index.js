@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const fs = require('fs');
 
 const { choose } = require('./tools')
 
@@ -9,6 +10,10 @@ const mockupData = require('./site/mockup.json');
 const allgames = require('./games');
 
 playingGame = undefined;
+
+const savedPlayerData = {
+  
+}
 
 
 
@@ -28,14 +33,26 @@ const port = 11100;
 const WebSocket = require('ws');
 const { Console } = require('console');
 
-const appPort = 3000;
-const websockPort = 3001;
+const appPort = process.env.PORT || 3000;
+const websockPort = process.env.SOCKPORT || 8081;
+
+const protocoltype = process.env.PROTOCOLTYPE || "ws"
+console.log(protocoltype)
+
+
+fs.writeFile('./site/temp.json', JSON.stringify({port:appPort,protocol:protocoltype}), 'utf8',function(err, data) {
+  if(err){
+    console.log(err)
+  }else{
+    console.log('success temp.json')
+  }
+});
 
 const app = express()
 app.use(express.static('site'));
-app.listen(appPort, () => console.log(`Listening on http://localhost:${appPort}`));
+const server = app.listen(appPort, () => console.log(`Listening on http://localhost:${appPort}`));
 
- const sockserver = new WebSocket.WebSocketServer({ port: websockPort })
+ const sockserver = new WebSocket.WebSocketServer({ server })
 
 
 

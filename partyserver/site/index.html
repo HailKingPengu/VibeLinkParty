@@ -36,64 +36,192 @@
     </div>
      <div id="overlay">
         <div class="sendInfo">
+            <div id="login">
+                Login
+                <input name="email" placeholder="email" id="loginEmail">
+                <input name="password" placeholder="password" id="loginPassword">
+                <button id="dologin">Login</button>
+
+
+                or
+                <button id="doregister">Register</button>
+                
+            </div>
+            <h4 id="showloginstatus"></h4><button id="logout">Log out</button>
+            <br><br>
             <label for="name">Whats your name?</label><br>
             <input id="myname" type="text"><br>
             <label for="likes">What do you like?</label><br>
             <div id="mylikeslist"><p id="mylistlikes"></p></div><br>
+            <label for="mylikecustominput">Custom interests:</label>
+            <input id="mylikecustominput"><button id="mylikecustombutton" onclick="addCustomLike()">Add interest</button><br>
             <br>
-            <button onclick="goServer()">Join Party</button>
+            <button id="joinaserver" >Join Party</button>
 
             <br><br>
             <button style="font-size: 1rem;" onclick="clearLikes()">Clear likes</button>
         </div>
      </div>
 
+      <script type="module" >
 
-     <script type="module">
+        
+                     // Import the functions you need from the SDKs you need
+      
+                     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
+      
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-analytics.js";
 
-        // Import the functions you need from the SDKs you need
+      import { getAuth,connectAuthEmulator,signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-auth.js";
+    
+      import { getFirestore, collection, addDoc, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js";
+      // TODO: Add SDKs for Firebase products that you want to use
+    
+      // https://firebase.google.com/docs/web/setup#available-libraries
+    
+    
+      // Your web app's Firebase configuration
+    
+      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    
+      const firebaseConfig = {
+    
+        apiKey: "AIzaSyBKpmeFbB4Ba4pBXxUjp2aCyyVMzc-cDaQ",
+    
+        authDomain: "project-vibelink.firebaseapp.com",
+    
+        projectId: "project-vibelink",
+    
+        storageBucket: "project-vibelink.appspot.com",
+    
+        messagingSenderId: "836300532359",
+    
+        appId: "1:836300532359:web:5c09854e0a6b361757a622",
+    
+        measurementId: "G-2KHBV5D44E"
+    
+      };
+              // Initialize Firebase
       
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
+              const app = initializeApp(firebaseConfig);
       
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-analytics.js";
+      const analytics = getAnalytics(app);
 
-        import { getAuth,connectAuthEmulator,signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-auth.js";
-      
-        // TODO: Add SDKs for Firebase products that you want to use
-      
-        // https://firebase.google.com/docs/web/setup#available-libraries
-      
-      
-        // Your web app's Firebase configuration
-      
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-      
-        const firebaseConfig = {
-      
-          apiKey: "AIzaSyBKpmeFbB4Ba4pBXxUjp2aCyyVMzc-cDaQ",
-      
-          authDomain: "project-vibelink.firebaseapp.com",
-      
-          projectId: "project-vibelink",
-      
-          storageBucket: "project-vibelink.appspot.com",
-      
-          messagingSenderId: "836300532359",
-      
-          appId: "1:836300532359:web:5c09854e0a6b361757a622",
-      
-          measurementId: "G-2KHBV5D44E"
-      
-        };
-      
-      
-        // Initialize Firebase
-      
-        const app = initializeApp(firebaseConfig);
-      
-        const analytics = getAnalytics(app);
-      
+      const auth = getAuth(app);
+      console.log("AUTH")
+    const loginEmailPassword = async () => {
+        console.log("LOGIN")
+        var loginEmail = $('#loginEmail').val(); 
+        var loginPassword = $('#loginPassword').val(); 
+
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth,loginEmail,loginPassword);
+            console.log(userCredential.user)
+        }
+        catch(error) {
+            console.log(error)
+        }
+
+    }
+
+    const registerEmailPassword = async () => {
+        console.log("REGISTER")
+        var loginEmail = $('#loginEmail').val(); 
+        var loginPassword = $('#loginPassword').val();
+        
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth,loginEmail,loginPassword);
+            console.log(userCredential.user)
+            window.myUID = userCredential.user.uid;
+            createMydocument();
+        }
+        catch(error) {
+            console.log(error)
+        }
+    }
+
+    const showloginStatus = function(isLogged){
+        if(isLogged){
+            $('#login').css('display','none')
+            $('#showloginstatus').css('color','green')
+            $('#showloginstatus').text("You're logged in!!")
+        }else{
+            $('#login').css('display','block')
+            $('#showloginstatus').text("You're not logged in.")
+            $('#showloginstatus').css('color','red')
+        }
+    }
+
+    const monitorAuthState = async () => {
+        onAuthStateChanged(auth , user => {
+            if(user){
+                window.myUID = user.uid;
+                console.log(window.myUID)
+                showloginStatus(true);
+            }else{
+                showloginStatus(false);
+            }
+        })
+    }
+
+    monitorAuthState()
+
+    $('#dologin').on('click',loginEmailPassword)
+    $('#doregister').on('click',registerEmailPassword)
+    $('#logout').on('click',()=>{
+        signOut(auth)
+    })
+
+
+    class UserData {
+    constructor (name, likes, score = 0) {
+        this.name = name;
+        this.likes = likes;
+        this.score = score;
+    }
+    toString() {
+        return this.name + ': ' + JSON.stringify(this.likes);
+    }
+    }
+
+    // Firestore data converter
+    const userConverter = {
+        toFirestore: (userData) => {
+            return {
+                name: userData.name,
+                likes: userData.likes,
+                score: userData.score
+                };
+        },
+        fromFirestore: (snapshot, options) => {
+            const data = snapshot.data(options);
+            return new UserData(data.name, data.likes,data.score);
+        }
+    };
+
+    const db = getFirestore(app);
+    console.log(db)
+
+    
+    const createMydocument = async  () => {
+        
+        var ref = doc(db, "users", window.myUID).withConverter(userConverter);
+        //await setDoc(ref, new UserData("New User", [],0));
+
+    }
+
+    const updateMydocument = async ( likes) => {
+        var inputname = $('#myname').val();
+        var ref = doc(db, "users", window.myUID).withConverter(userConverter);
+        await setDoc(ref, new UserData(inputname, likes,0));
+
+    }
+    
+    
+
+    $('#joinaserver').on('click',()=>{
+        updateMydocument(window.mylikes)
+    })
       </script>
-      <script></script>
 </body>
 </html>

@@ -74,7 +74,7 @@
 
       import { getAuth,connectAuthEmulator,signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-auth.js";
     
-      import { getFirestore, collection, addDoc, getDocs, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js";
+      import { getFirestore, collection, addDoc, getDoc, setDoc, doc } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js";
       // TODO: Add SDKs for Firebase products that you want to use
     
       // https://firebase.google.com/docs/web/setup#available-libraries
@@ -157,6 +157,7 @@
             if(user){
                 window.myUID = user.uid;
                 console.log(window.myUID)
+                loadinMydocument();
                 showloginStatus(true);
             }else{
                 showloginStatus(false);
@@ -217,11 +218,24 @@
 
     }
     
-    
+    const loadinMydocument = async () => {
+        const docRef = doc(db, "users", window.myUID);
+        const docSnap = await getDoc(docRef);
 
+        if (docSnap.exists()) {
+            window.mylikes = docSnap.data().likes || window.mylikes;
+            window.updatelikes();
+        } else {
+        // docSnap.data() will be undefined in this case
+        console.log("No such document!");
+        }
+    }
+    
     $('#joinaserver').on('click',()=>{
         updateMydocument(window.mylikes)
     })
+
+
       </script>
 </body>
 </html>

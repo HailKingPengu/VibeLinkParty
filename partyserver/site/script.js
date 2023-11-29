@@ -287,3 +287,15 @@ function addCustomLike(){
 
 }
 
+
+window.updatelikes = function() {
+    writelikes();
+
+    $('.likeslistitem').remove();
+    recommendedlikes = allrecommendedlikes;
+    recommendedlikes.sort();
+    recommendedlikes = excludeArrays(recommendedlikes,window.mylikes);
+    recommendedlikes.forEach((element)=> {
+        createlikeButton(element)
+    })
+}

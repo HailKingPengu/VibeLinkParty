@@ -26,11 +26,14 @@ isplayinggame = false;
 port = 8081;
 protocol = 'ws'
 
+wannaconnect = false;
+
 window.myUID = undefined
 
 // SERVER STUFF
 
 function goServer () {
+    wannaconnect = true;
     if(webSocket != undefined){return("You are already connected")}
     if(window.mylikes.length<3){return("Choose more likes")}
         var wport = `:${window.location.port}`; if(protocol=="wss"){wport = ""}
@@ -48,6 +51,15 @@ function goServer () {
 
 }
 
+
+setInterval((()=>{
+    if(!webSocket){
+        if(wannaconnect){
+            console.log('RECONNECT');
+            goServer();
+        }
+    }
+}),1000)
 function onMessage(event) {
     console.log(event)
     $('#messages').append(`<p>${event.data}</p>`)

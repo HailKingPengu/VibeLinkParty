@@ -84,7 +84,8 @@ function sendLoginData () {
     sendMessage({
         type : "login",
         likes : window.mylikes,
-        name : myname
+        name : myname,
+        uid: window.myUID
     })
 }
 
@@ -120,6 +121,7 @@ function onStart() {
     $('#joinaserver').on('click',()=>{
         goServer()
     })
+    //createPlayerlistfake()
 
 }
 function writelikes(){
@@ -162,7 +164,9 @@ function createPlayerlist(list,showscores = false){
     list.forEach((element)=>{
 
         var score = ""
-        if(showscores){score = `[ ${element.score} ]`}
+        if(showscores){score = `[ ${element.score} ]`
+        if (element.id == myid) {$('#myscoredisplay').text(`your score: ${element.score}`)}
+        }
         $('#players').append(
             `<div class='player' style="background-color:${element.color};">
                 <h2>${element.name} ${score}</h2>
@@ -171,7 +175,18 @@ function createPlayerlist(list,showscores = false){
         )
     })
 }
-
+function createPlayerlistfake(){
+    var list = []
+    for (let index = 0; index < 100; index++) {
+        list.push({
+            score: Math.floor(Math.random()*100),
+            color:"green",
+            name: "namerandom"+Math.floor(Math.random()*100).toString()
+        })
+        
+    }
+    createPlayerlist(list,true)
+}
 function sendConnectPlayers() {
     var enteredvalue = $('#connecttext').val();
     console.log(enteredvalue);
@@ -280,6 +295,7 @@ function addCustomLike(){
     newlike = newlike.toLowerCase();
 
     if(newlike===""){return;}
+    if(newlike.length>25){return;}
     if(window.mylikes.includes(newlike)){return;}
 
     window.mylikes.push(newlike)

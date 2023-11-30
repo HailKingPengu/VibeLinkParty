@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Vibelink</title>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Jockey+One&family=Open+Sans:wght@300&family=Poppins:wght@500&display=swap');
@@ -21,6 +21,7 @@
 
     </header>
     <main>
+        <p id="myscoredisplay"></p>
         <div id="players"></div>  
     </main>
     <footer>
@@ -159,8 +160,10 @@
                 console.log(window.myUID)
                 loadinMydocument();
                 showloginStatus(true);
+                $('#logout').css('display','block')
             }else{
                 showloginStatus(false);
+                $('#logout').css('display','none')
             }
         })
     }

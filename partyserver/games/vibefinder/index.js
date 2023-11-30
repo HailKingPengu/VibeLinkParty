@@ -1,6 +1,7 @@
 
 const gamedata = require('./data.json');
 const { choose } = require('../../tools')
+const {savedPlayerData , playerGetData, playerSetData, playerDataExists, playerAddScore} = require('../../player')
 
 class game {
     constructor(C) {
@@ -12,28 +13,33 @@ class game {
     onStart () {
       this.alllikes = this.socket.getAllInterests()
       this.socket.clients.forEach((client)=>{
-        client.data.quest = givePersonQuest(this.alllikes);
-        client.sendGame({list:[{type:"txt",txt:client.data.quest}]});
+
+        playerSetData(client.gUID,{quest:givePersonQuest(this.alllikes)})
+        client.sendGame({list:[{type:"txt",txt:playerGetData(client.gUID).quest}]});
+
       })
     }
 
     onJoin (client,obj) {
       this.alllikes = this.socket.getAllInterests()
-      client.data.quest = givePersonQuest(this.alllikes);
-      client.sendGame({list:[{type:"txt",txt:client.data.quest}]});
+      playerSetData(client.gUID,{quest:givePersonQuest(this.alllikes)});
+      client.sendGame({list:[{type:"txt",txt:playerGetData(client.gUID).quest}]});
     }
     onPlayerConnect (client,obj,searched) {
-      client.data.score++;
-      searched.data.score++;
+
+      console.log(playerGetData(client.gUID).score)
+      playerAddScore(client.gUID,1)
+      playerAddScore(searched.gUID,1)
+      console.log(playerGetData(client.gUID).score)
 
 
       this.socket.updateGame();
 
-      searched.data.quest = givePersonQuest(this.alllikes);
-      searched.sendGame({list:[{type:"txt",txt:searched.data.quest}]});
+      playerSetData(searched.gUID,{quest:givePersonQuest(this.alllikes)})
+      searched.sendGame({list:[{type:"txt",txt:playerGetData(searched.gUID).quest}]});
 
-      client.data.quest = givePersonQuest(this.alllikes);
-      client.sendGame({list:[{type:"txt",txt:client.data.quest}]});
+      playerSetData(client.gUID,{quest:givePersonQuest(this.alllikes)})
+      client.sendGame({list:[{type:"txt",txt:playerGetData(client.gUID).quest}]});
     }
     onLeave (client,obj) {
 

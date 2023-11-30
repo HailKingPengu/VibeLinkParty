@@ -9,11 +9,10 @@ const mockupData = require('./site/mockup.json');
 
 const allgames = require('./games');
 
+const {savedPlayerData , playerGetData, playerSetData, playerDataExists} = require('./player')
+
 playingGame = undefined;
 
-const savedPlayerData = {
-  
-}
 
 
 
@@ -80,7 +79,7 @@ const server = app.listen(appPort, () => console.log(`Listening on http://localh
  sockserver.getAllInterests = function(){
   var allarr = []
   sockserver.clients.forEach(client => {
-    allarr = allarr.concat(client.data.likes.filter((item) => allarr.indexOf(item) < 0)); 
+    allarr = allarr.concat(playerGetData(client.gUID).likes.filter((item) => allarr.indexOf(item) < 0)); 
   })
   return(allarr)
  }
@@ -134,19 +133,30 @@ const server = app.listen(appPort, () => console.log(`Listening on http://localh
 
 
  function loginuser(ws,obj){
-  ws.data = {}
-    ws.data.name = obj.name;
-    ws.data.likes = obj.likes;
-    ws.data.color = choose(['#E6AF3F','#DE476F','#3D80DF','#D9D9D9'])
-    ws.data.id = generatePlayerID();
-    ws.data.score = 0;
+
+    ws.gUID = obj.uid;
     var isfirst = sockserver.clients.size<=1;
-    ws.data.isadmin = isfirst;
+    if(!playerDataExists(ws.gUID)){
+      var canbeadmin = isfirst;
+      playerSetData(ws.gUID,{
+        name : obj.name,
+        likes : obj.likes,
+        color : choose(['#E6AF3F','#DE476F','#3D80DF','#D9D9D9']),
+        id : generatePlayerID(),
+        score: 0,
+        isadmin : canbeadmin
+        
+      })
+    }
+
+
 
 
     sockserver.clients.forEach(client => {
-      var obj = {list:playerlist(),myid:client.data.id,isadmin:client.data.isadmin,playingGame:(playingGame!==undefined)};
-      if(client.data.isadmin){
+      var getobj = playerGetData(client.gUID);
+
+      var obj = {list:playerlist(),myid:getobj.id,isadmin:getobj.isadmin,playingGame:(playingGame!==undefined)};
+      if(getobj.isadmin){
         obj.games = [];
         allgames.games.forEach((elem)=>{
           obj.games.push(elem.name)
@@ -160,13 +170,22 @@ const server = app.listen(appPort, () => console.log(`Listening on http://localh
  function playerlist(){
   var list = []
   sockserver.clients.forEach(client => {
-    var obj = {
-      name: client.data.name,
-      color: client.data.color,
-      id: client.data.id,
-      score: client.data.score
-    }
-    list.push(obj);
+    var getobj = playerGetData(client.gUID);
+
+      var obj = {
+        name: getobj.name,
+        color: getobj.color,
+        id: getobj.id,
+        score: getobj.score
+      }
+      list.push(obj);
+
+  })
+
+  list.sort(function(a, b) {
+    if (a.score > b.score){return -1;}
+    if (a.score < b.score){return 1;}
+    return(0)
   })
 
   return(list)
@@ -191,7 +210,9 @@ const playerIdLength = 4;
   var val = undefined;
   sockserver.clients.forEach(client => {
     
-    var trueness = client.data.id === theid;
+    var dta = playerGetData(client.gUID);
+    
+    var trueness = (dta!=undefined) && dta.id === theid;
     console.log(trueness)
     if(trueness){
       val = client
@@ -216,3 +237,4 @@ function playerConnects(ws,obj) {
     }
   }
 }
+

@@ -141,19 +141,29 @@ header * {
     height: 30px;
     flex-basis: 0;
     background-color: #3D80DF;
+    opacity: 0.8;
+
+    border: 4px;
+    border-color: black;
+    border-style: dotted;
 
     border-radius: 8px;
     font-weight: 1000;
     flex-basis: fit-content;
 
+    padding: 0px;
     padding-right: 10px;
     padding-left: 10px;
+    
     vertical-align: middle;
 }
 
 .likeslistitem:hover{
     background-color: #90beff;
     cursor:pointer;
+    opacity: 1;
+    border-style: solid;
+    border-color: #90beff;
 }
 
 

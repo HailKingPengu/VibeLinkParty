@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="./favicon.ico">
     <title>Vibelink</title>
 
     <style>
@@ -52,12 +53,13 @@
             <br><br>
             <label for="name">Whats your name?</label><br>
             <input id="myname" type="text"><br>
-            <label for="likes">What do you like?</label><br>
-            <div id="mylikeslist"><p id="mylistlikes"></p></div><br>
-            <label for="mylikecustominput">Custom interests:</label>
+            <br>
+            <label for="likes">What do you like? Select atleast three interests.</label>
+            <div id="mylikeslist"><div id="mylistlikes"></div></div><br>
+            <label for="mylikecustominput">Or add your own custom interest:</label>
             <input id="mylikecustominput"><button id="mylikecustombutton" onclick="addCustomLike()">Add interest</button><br>
             <br>
-            <button id="joinaserver" >Join Party</button>
+            <button id="joinaserver" style="background-color: #9b244f; color: whitesmoke;">Join Party</button>
 
             <br><br>
             <button style="font-size: 1rem;" onclick="clearLikes()">Clear likes</button>

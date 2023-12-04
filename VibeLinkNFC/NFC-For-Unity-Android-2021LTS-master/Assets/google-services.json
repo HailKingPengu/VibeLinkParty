@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "836300532359",
+    "project_id": "project-vibelink",
+    "storage_bucket": "project-vibelink.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:836300532359:android:fa6945a8906883d257a622",
+        "android_client_info": {
+          "package_name": "com.DefaultCompany.com.unity.template.mobile2D"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBoBRg7gR-_pEv5WwXMdjyOj04Uoe4rT3o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:836300532359:android:74d7495cd5550cf957a622",
+        "android_client_info": {
+          "package_name": "com.nest.NFCReader"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBoBRg7gR-_pEv5WwXMdjyOj04Uoe4rT3o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

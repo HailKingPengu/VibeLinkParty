@@ -9,12 +9,13 @@ allgamestoplay = [];
 allrecommendedlikes = []
 recommendedlikes = ["games","movies","anime","baking"];
 keyobject = {};
-const mylikes = [];
-var likeonline = localStorage.getItem('mylikes').split(",")
+window.mylikes = [];
+likeonline = []
+//var likeonline = localStorage.getItem('window.mylikes').split(",")
 console.log(likeonline)
 if(likeonline.length>2){
     likeonline.forEach((element)=>{
-        mylikes.push(element)
+        window.mylikes.push(element)
     })
 }
 myname = "";
@@ -22,18 +23,48 @@ myid = "";
 isadmin = false;
 isplayinggame = false;
 
+port = 8081;
+protocol = 'ws'
+
+wannaconnect = false;
+
+window.myUID = undefined
+
 // SERVER STUFF
+
 function goServer () {
     if(webSocket != undefined){return("You are already connected")}
-    if(mylikes.length<3){return("Choose more likes")}
+    if(window.mylikes.length<3){return("Choose more likes")}
+    wannaconnect = true;
+    
+        var wport = `:${window.location.port}`; if(protocol=="wss"){wport = ""}
+        var wsip = `${protocol}://${window.location.hostname}${wport}`
 
-        webSocket = new WebSocket(`ws://${window.location.hostname}:3001/`);
+        console.log(wsip);
+        webSocket = new WebSocket(wsip);
         webSocket.onmessage = onMessage;
+        webSocket.onclose = (event) => {
+            console.log("DISCONNected");
+            reconnect();
+          };
         console.log(webSocket)
         overlayDeactivate()
         return("")
 
 }
+
+function reconnect() {
+    if(wannaconnect){
+        webSocket = undefined;
+        console.log('RECONNECT');
+        goServer(); 
+    }  
+}
+setInterval((()=>{
+    if(!webSocket){
+            reconnect();
+    }
+}),1000)
 
 function onMessage(event) {
     console.log(event)
@@ -53,6 +84,7 @@ function onMessage(event) {
             createPlayerlist(obj.list,isplayinggame);
         break;
         case "startgame":
+            $('.admingame').remove();
             createPlayerlist(obj.list,isplayinggame);
         break;
         case "update":
@@ -67,11 +99,12 @@ function onMessage(event) {
 function sendLoginData () {
 
     myname = $('#myname').val();
-    localStorage.setItem('mylikes', mylikes);
+    localStorage.setItem('window.mylikes', window.mylikes);
     sendMessage({
         type : "login",
-        likes : mylikes,
-        name : myname
+        likes : window.mylikes,
+        name : myname,
+        uid: window.myUID
     })
 }
 
@@ -80,12 +113,19 @@ function onStart() {
     writelikes()
     console.log("started")
 
+    $.getJSON("./temp.json",function(obj){
+
+        port = obj.port;
+        protocol = obj.protocol;
+        console.log(`port: ${obj.port}`)
+    })
+
     $.getJSON("./mockup.json",function(obj){
         allrecommendedlikes = obj.tags.general;
         recommendedlikes = allrecommendedlikes;
         keyobject = obj.tags;
         recommendedlikes.sort();
-        recommendedlikes = excludeArrays(recommendedlikes,mylikes);
+        recommendedlikes = excludeArrays(recommendedlikes,window.mylikes);
         recommendedlikes.forEach((element)=> {
             createlikeButton(element)
         })
@@ -97,12 +137,16 @@ function onStart() {
             sendConnectPlayers();
         }
     });
-    
+    $('#joinaserver').on('click',()=>{
+        console.log("HELLO 2")
+                goServer()
+    })
+    //createPlayerlistfake()
 
 }
 function writelikes(){
     var txtlist = `<div id="likecontainer">`
-    mylikes.forEach((element)=>{
+    window.mylikes.forEach((element)=>{
         txtlist = txtlist+`<div class="like">${element}</div>`
     })
     txtlist = txtlist+'</div>'
@@ -114,7 +158,7 @@ function createlikeButton(thelike){
         `<button class="likeslistitem">${thelike}</button>`
     )
     $(`.likeslistitem:contains('${thelike}')`).on( "click",(eventData) =>{
-        mylikes.push(thelike)
+        window.mylikes.push(thelike)
         $(eventData.currentTarget).remove()
 
         writelikes();
@@ -140,7 +184,9 @@ function createPlayerlist(list,showscores = false){
     list.forEach((element)=>{
 
         var score = ""
-        if(showscores){score = `[ ${element.score} ]`}
+        if(showscores){score = `[ ${element.score} ]`
+        if (element.id == myid) {$('#myscoredisplay').text(`your score: ${element.score}`)}
+        }
         $('#players').append(
             `<div class='player' style="background-color:${element.color};">
                 <h2>${element.name} ${score}</h2>
@@ -149,7 +195,18 @@ function createPlayerlist(list,showscores = false){
         )
     })
 }
-
+function createPlayerlistfake(){
+    var list = []
+    for (let index = 0; index < 100; index++) {
+        list.push({
+            score: Math.floor(Math.random()*100),
+            color:"green",
+            name: "namerandom"+Math.floor(Math.random()*100).toString()
+        })
+        
+    }
+    createPlayerlist(list,true)
+}
 function sendConnectPlayers() {
     var enteredvalue = $('#connecttext').val();
     console.log(enteredvalue);
@@ -177,7 +234,7 @@ function overlayActivate() {
         var str = ``;
         if(!playingGame){
             allgamestoplay.forEach((elem)=>{
-                str = str+`<button onClick="startGame('${elem}')">
+                str = str+`<button class="admintools admingame"onClick="startGame('${elem}')">
                 <h3>${elem}</h3>
             </button>`
             })
@@ -203,6 +260,9 @@ function CreateGameBar (boxinfo = {}) {
             const element = info.list[index];
             if(element.type =="txt"){
                 $('#gamebar').append(`<h3>${element.txt}</h3>`)
+            }else
+            if(element.type =="block"){
+                $('#gamebar').append(`<div class="funblock" style="background-color: ${element.color};"><h3>${element.txt}</h3></div>`)
             }
         }
     }
@@ -239,11 +299,38 @@ return(arraynew)
 
 
 function clearLikes() {
-    mylikes.length = 0;
+    window.mylikes.length = 0;
     writelikes();
     recommendedlikes = allrecommendedlikes;
     recommendedlikes.sort();
     $('.likeslistitem').remove();
+    recommendedlikes.forEach((element)=> {
+        createlikeButton(element)
+    })
+}
+
+function addCustomLike(){
+    var newlike = $('#mylikecustominput').val();
+    $('#mylikecustominput').val("");
+    newlike = newlike.toLowerCase();
+
+    if(newlike===""){return;}
+    if(newlike.length>25){return;}
+    if(window.mylikes.includes(newlike)){return;}
+
+    window.mylikes.push(newlike)
+    writelikes();
+
+}
+
+
+window.updatelikes = function() {
+    writelikes();
+
+    $('.likeslistitem').remove();
+    recommendedlikes = allrecommendedlikes;
+    recommendedlikes.sort();
+    recommendedlikes = excludeArrays(recommendedlikes,window.mylikes);
     recommendedlikes.forEach((element)=> {
         createlikeButton(element)
     })

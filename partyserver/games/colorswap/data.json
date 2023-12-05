@@ -1,7 +1,8 @@
 {
-    "questions": [
-        "Find a person that likes [interest].",
-        "Talk to a person about [subject].",
-        "Talk to someone named [name]."
+    "colors": [
+        {"name":"Blue","color":"#4287f5"},
+        {"name":"Green","color":"#4ef542"},
+        {"name":"Red","color":"#f54b42"},
+        {"name":"Yellow","color":"#f5da42"}
     ]
 }

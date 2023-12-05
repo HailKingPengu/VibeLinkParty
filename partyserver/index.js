@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const fs = require('fs');
 
 const { choose } = require('./tools')
 
@@ -8,7 +9,10 @@ const mockupData = require('./site/mockup.json');
 
 const allgames = require('./games');
 
+const {savedPlayerData , playerGetData, playerSetData, playerDataExists} = require('./player')
+
 playingGame = undefined;
+
 
 
 
@@ -28,14 +32,26 @@ const port = 11100;
 const WebSocket = require('ws');
 const { Console } = require('console');
 
-const appPort = 3000;
-const websockPort = 3001;
+const appPort = process.env.PORT || 3000;
+const websockPort = process.env.SOCKPORT || 8081;
+
+const protocoltype = process.env.PROTOCOLTYPE || "ws"
+console.log(protocoltype)
+
+
+fs.writeFile('./site/temp.json', JSON.stringify({port:appPort,protocol:protocoltype}), 'utf8',function(err, data) {
+  if(err){
+    console.log(err)
+  }else{
+    console.log('success temp.json')
+  }
+});
 
 const app = express()
 app.use(express.static('site'));
-app.listen(appPort, () => console.log(`Listening on http://localhost:${appPort}`));
+const server = app.listen(appPort, () => console.log(`Listening on http://localhost:${appPort}`));
 
- const sockserver = new WebSocket.WebSocketServer({ port: websockPort })
+ const sockserver = new WebSocket.WebSocketServer({ server })
 
 
 
@@ -63,7 +79,7 @@ app.listen(appPort, () => console.log(`Listening on http://localhost:${appPort}`
  sockserver.getAllInterests = function(){
   var allarr = []
   sockserver.clients.forEach(client => {
-    allarr = allarr.concat(client.data.likes.filter((item) => allarr.indexOf(item) < 0)); 
+    allarr = allarr.concat(playerGetData(client.gUID).likes.filter((item) => allarr.indexOf(item) < 0)); 
   })
   return(allarr)
  }
@@ -96,14 +112,18 @@ app.listen(appPort, () => console.log(`Listening on http://localhost:${appPort}`
         playerConnects(ws,obj);
       break;
       case "startgame":
-        playingGame = new allgames.games[0].game(sockserver); // CHANGE THIS LATER
-        playingGame.socket = sockserver;
-        var obj = {
-          list : playerlist(),
-          gamename: allgames.games[0].name
-        };
-        playingGame.onStart();
-        sockserver.broadcast("startgame",obj)
+        var findccorrectgame = function(gam){
+          return(gam.name===obj.game)
+        }
+        var correctgames = allgames.games.filter(findccorrectgame)
+          playingGame = new correctgames[0].game(sockserver); // CHANGE THIS LATER
+          playingGame.socket = sockserver;
+          var obj = {
+            list : playerlist(),
+            gamename: correctgames[0].name
+          };
+          playingGame.onStart();
+          sockserver.broadcast("startgame",obj)
 
       break;
       
@@ -117,19 +137,30 @@ app.listen(appPort, () => console.log(`Listening on http://localhost:${appPort}`
 
 
  function loginuser(ws,obj){
-  ws.data = {}
-    ws.data.name = obj.name;
-    ws.data.likes = obj.likes;
-    ws.data.color = choose(['#E6AF3F','#DE476F','#3D80DF','#D9D9D9'])
-    ws.data.id = generatePlayerID();
-    ws.data.score = 0;
+
+    ws.gUID = obj.uid;
     var isfirst = sockserver.clients.size<=1;
-    ws.data.isadmin = isfirst;
+    if(!playerDataExists(ws.gUID)){
+      var canbeadmin = isfirst;
+      playerSetData(ws.gUID,{
+        name : obj.name,
+        likes : obj.likes,
+        color : choose(['#E6AF3F','#DE476F','#3D80DF','#D9D9D9']),
+        id : generatePlayerID(),
+        score: 0,
+        isadmin : canbeadmin
+        
+      })
+    }
+
+
 
 
     sockserver.clients.forEach(client => {
-      var obj = {list:playerlist(),myid:client.data.id,isadmin:client.data.isadmin,playingGame:(playingGame!==undefined)};
-      if(client.data.isadmin){
+      var getobj = playerGetData(client.gUID);
+
+      var obj = {list:playerlist(),myid:getobj.id,isadmin:getobj.isadmin,playingGame:(playingGame!==undefined)};
+      if(getobj.isadmin){
         obj.games = [];
         allgames.games.forEach((elem)=>{
           obj.games.push(elem.name)
@@ -143,13 +174,22 @@ app.listen(appPort, () => console.log(`Listening on http://localhost:${appPort}`
  function playerlist(){
   var list = []
   sockserver.clients.forEach(client => {
-    var obj = {
-      name: client.data.name,
-      color: client.data.color,
-      id: client.data.id,
-      score: client.data.score
-    }
-    list.push(obj);
+    var getobj = playerGetData(client.gUID);
+
+      var obj = {
+        name: getobj.name,
+        color: getobj.color,
+        id: getobj.id,
+        score: getobj.score
+      }
+      list.push(obj);
+
+  })
+
+  list.sort(function(a, b) {
+    if (a.score > b.score){return -1;}
+    if (a.score < b.score){return 1;}
+    return(0)
   })
 
   return(list)
@@ -174,7 +214,9 @@ const playerIdLength = 4;
   var val = undefined;
   sockserver.clients.forEach(client => {
     
-    var trueness = client.data.id === theid;
+    var dta = playerGetData(client.gUID);
+    
+    var trueness = (dta!=undefined) && dta.id === theid;
     console.log(trueness)
     if(trueness){
       val = client
@@ -192,10 +234,10 @@ function playerConnects(ws,obj) {
     if(!issame){
 
       // do actions when connecting to players
-      console.log("ACTION")
       if(playingGame){
         playingGame.onPlayerConnect(ws,obj,search)
       }
     }
   }
 }
+

@@ -39,8 +39,12 @@ main {
     color:black;
     z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
     cursor:auto; /* Add a pointer on hover */
-  }
 
+    overflow-y: scroll;
+  }
+#myscoredisplay {
+    padding-left: 10px;
+}
 .sendInfo {
     margin: auto;
     padding: 10px;
@@ -234,4 +238,13 @@ header button {
     -webkit-box-shadow: 0px 19px 33px -17px rgba(82,82,82,1);
     -moz-box-shadow: 0px 19px 33px -17px rgba(82,82,82,1);
     box-shadow: 0px 19px 33px -17px rgba(82,82,82,1);
+}
+#joinaserver {
+    background-color: #9b244f; 
+    color: whitesmoke;
+}
+
+#joinaserver:hover {
+    background-color: aliceblue;
+    color: black;
 }

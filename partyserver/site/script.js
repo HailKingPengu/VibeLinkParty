@@ -33,9 +33,10 @@ window.myUID = undefined
 // SERVER STUFF
 
 function goServer () {
-    wannaconnect = true;
     if(webSocket != undefined){return("You are already connected")}
     if(window.mylikes.length<3){return("Choose more likes")}
+    wannaconnect = true;
+    
         var wport = `:${window.location.port}`; if(protocol=="wss"){wport = ""}
         var wsip = `${protocol}://${window.location.hostname}${wport}`
 
@@ -44,6 +45,7 @@ function goServer () {
         webSocket.onmessage = onMessage;
         webSocket.onclose = (event) => {
             console.log("DISCONNected");
+            reconnect();
           };
         console.log(webSocket)
         overlayDeactivate()
@@ -51,15 +53,19 @@ function goServer () {
 
 }
 
-
+function reconnect() {
+    if(wannaconnect){
+        webSocket = undefined;
+        console.log('RECONNECT');
+        goServer(); 
+    }  
+}
 setInterval((()=>{
     if(!webSocket){
-        if(wannaconnect){
-            console.log('RECONNECT');
-            goServer();
-        }
+            reconnect();
     }
 }),1000)
+
 function onMessage(event) {
     console.log(event)
     $('#messages').append(`<p>${event.data}</p>`)
@@ -78,6 +84,7 @@ function onMessage(event) {
             createPlayerlist(obj.list,isplayinggame);
         break;
         case "startgame":
+            $('.admingame').remove();
             createPlayerlist(obj.list,isplayinggame);
         break;
         case "update":
@@ -131,7 +138,8 @@ function onStart() {
         }
     });
     $('#joinaserver').on('click',()=>{
-        goServer()
+        console.log("HELLO 2")
+                goServer()
     })
     //createPlayerlistfake()
 
@@ -226,7 +234,7 @@ function overlayActivate() {
         var str = ``;
         if(!playingGame){
             allgamestoplay.forEach((elem)=>{
-                str = str+`<button onClick="startGame('${elem}')">
+                str = str+`<button class="admintools admingame"onClick="startGame('${elem}')">
                 <h3>${elem}</h3>
             </button>`
             })

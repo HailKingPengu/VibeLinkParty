@@ -59,7 +59,7 @@
             <label for="mylikecustominput">Or add your own custom interest:</label>
             <input id="mylikecustominput"><button id="mylikecustombutton" onclick="addCustomLike()">Add interest</button><br>
             <br>
-            <button id="joinaserver" style="background-color: #9b244f; color: whitesmoke;">Join Party</button>
+            <button id="joinaserver">Join Party</button>
 
             <br><br>
             <button style="font-size: 1rem;" onclick="clearLikes()">Clear likes</button>
@@ -230,6 +230,9 @@
         if (docSnap.exists()) {
             window.mylikes = docSnap.data().likes || window.mylikes;
             window.updatelikes();
+
+            var theval = docSnap.data().name || $('#myname').val();
+            $('#myname').val(theval)
         } else {
         // docSnap.data() will be undefined in this case
         console.log("No such document!");
@@ -237,6 +240,7 @@
     }
     
     $('#joinaserver').on('click',()=>{
+        console.log("HELLO")
         updateMydocument(window.mylikes)
     })
 

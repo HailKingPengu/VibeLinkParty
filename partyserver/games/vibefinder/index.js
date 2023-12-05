@@ -14,7 +14,7 @@ class game {
       this.alllikes = this.socket.getAllInterests()
       this.socket.clients.forEach((client)=>{
 
-        playerSetData(client.gUID,{quest:givePersonQuest(this.alllikes)})
+        playerSetData(client.gUID,{quest:givePersonQuest(this.alllikes,client)})
         client.sendGame({list:[{type:"txt",txt:playerGetData(client.gUID).quest}]});
 
       })
@@ -22,7 +22,7 @@ class game {
 
     onJoin (client,obj) {
       this.alllikes = this.socket.getAllInterests()
-      playerSetData(client.gUID,{quest:givePersonQuest(this.alllikes)});
+      playerSetData(client.gUID,{quest:givePersonQuest(this.alllikes,client)});
       client.sendGame({list:[{type:"txt",txt:playerGetData(client.gUID).quest}]});
     }
     onPlayerConnect (client,obj,searched) {
@@ -35,10 +35,10 @@ class game {
 
       this.socket.updateGame();
 
-      playerSetData(searched.gUID,{quest:givePersonQuest(this.alllikes)})
+      playerSetData(searched.gUID,{quest:givePersonQuest(this.alllikes,searched)})
       searched.sendGame({list:[{type:"txt",txt:playerGetData(searched.gUID).quest}]});
 
-      playerSetData(client.gUID,{quest:givePersonQuest(this.alllikes)})
+      playerSetData(client.gUID,{quest:givePersonQuest(this.alllikes,client)})
       client.sendGame({list:[{type:"txt",txt:playerGetData(client.gUID).quest}]});
     }
     onLeave (client,obj) {
@@ -46,14 +46,19 @@ class game {
     }
   }
 
-function givePersonQuest(alllikes){
+function givePersonQuest(alllikes,client){
   var quest = choose(gamedata.questions);
+
+  var d = playerGetData(client.gUID)
+  var plike = choose(d.likes);
 
   var like = choose(alllikes);
   var subject = choose(gamedata.subjects);
 
   var queststring = quest.replace("[interest]", like);
   queststring = queststring.replace("[subject]",subject);
+
+  queststring = queststring.replace("[personal]",plike);
 
 
   return(queststring);

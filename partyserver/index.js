@@ -112,14 +112,18 @@ const server = app.listen(appPort, () => console.log(`Listening on http://localh
         playerConnects(ws,obj);
       break;
       case "startgame":
-        playingGame = new allgames.games[0].game(sockserver); // CHANGE THIS LATER
-        playingGame.socket = sockserver;
-        var obj = {
-          list : playerlist(),
-          gamename: allgames.games[0].name
-        };
-        playingGame.onStart();
-        sockserver.broadcast("startgame",obj)
+        var findccorrectgame = function(gam){
+          return(gam.name===obj.game)
+        }
+        var correctgames = allgames.games.filter(findccorrectgame)
+          playingGame = new correctgames[0].game(sockserver); // CHANGE THIS LATER
+          playingGame.socket = sockserver;
+          var obj = {
+            list : playerlist(),
+            gamename: correctgames[0].name
+          };
+          playingGame.onStart();
+          sockserver.broadcast("startgame",obj)
 
       break;
       
@@ -230,7 +234,6 @@ function playerConnects(ws,obj) {
     if(!issame){
 
       // do actions when connecting to players
-      console.log("ACTION")
       if(playingGame){
         playingGame.onPlayerConnect(ws,obj,search)
       }

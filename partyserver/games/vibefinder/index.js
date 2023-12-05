@@ -27,10 +27,8 @@ class game {
     }
     onPlayerConnect (client,obj,searched) {
 
-      console.log(playerGetData(client.gUID).score)
       playerAddScore(client.gUID,1)
       playerAddScore(searched.gUID,1)
-      console.log(playerGetData(client.gUID).score)
 
 
       this.socket.updateGame();

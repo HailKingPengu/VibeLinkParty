@@ -30,6 +30,8 @@ wannaconnect = false;
 
 window.myUID = undefined
 
+countdownTimer = 0;
+
 // SERVER STUFF
 
 function goServer () {
@@ -267,6 +269,19 @@ function CreateGameBar (boxinfo = {}) {
             }else
             if(element.type =="block"){
                 $('#gamebar').append(`<div class="funblock" style="background-color: ${element.color};"><h3>${element.txt}</h3></div>`)
+            }else
+            if(element.type =="countdown"){
+                countdownTimer = element.time;
+                $('#gamebar').append(`<h4 class="countdown">${countdownTimer}</h4>`);
+                var func = function(){
+                    var date1 = countdownTimer;
+                    var date2 = Date.now();
+                    diffTime = Math.floor(Math.abs(date2 - date1)/1000);
+                    if(date2>date1){diffTime = 0;}
+                    $('.countdown').text(`${diffTime} seconds`)
+                }
+                func();
+                setInterval(func,1000)
             }
         }
     }

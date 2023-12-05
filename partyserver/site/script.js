@@ -139,7 +139,11 @@ function onStart() {
     });
     $('#joinaserver').on('click',()=>{
         console.log("HELLO 2")
-                goServer()
+        
+        var ret = goServer();
+        if(ret!==""){
+            console.log(`ERROR: ${ret}`)
+        }
     })
     //createPlayerlistfake()
 

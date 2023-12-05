@@ -38,6 +38,8 @@ const websockPort = process.env.SOCKPORT || 8081;
 const protocoltype = process.env.PROTOCOLTYPE || "ws"
 console.log(protocoltype)
 
+const adminOverride = process.env.ADMIN || ""
+
 
 fs.writeFile('./site/temp.json', JSON.stringify({port:appPort,protocol:protocoltype}), 'utf8',function(err, data) {
   if(err){
@@ -141,7 +143,7 @@ const server = app.listen(appPort, () => console.log(`Listening on http://localh
     ws.gUID = obj.uid;
     var isfirst = sockserver.clients.size<=1;
     if(!playerDataExists(ws.gUID)){
-      var canbeadmin = isfirst;
+      var canbeadmin = isfirst || (ws.gUID === adminOverride);
       playerSetData(ws.gUID,{
         name : obj.name,
         likes : obj.likes,

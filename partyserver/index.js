@@ -150,7 +150,8 @@ const server = app.listen(appPort, () => console.log(`Listening on http://localh
         color : choose(['#E6AF3F','#DE476F','#3D80DF','#D9D9D9']),
         id : generatePlayerID(),
         score: 0,
-        isadmin : canbeadmin
+        isadmin : canbeadmin,
+        profile: './content/'+choose(['monster1.png','monster2.png','monster3.png','monster4.png'])
         
       })
     }
@@ -182,7 +183,8 @@ const server = app.listen(appPort, () => console.log(`Listening on http://localh
         name: getobj.name,
         color: getobj.color,
         id: getobj.id,
-        score: getobj.score
+        score: getobj.score,
+        profile:getobj.profile
       }
       list.push(obj);
 

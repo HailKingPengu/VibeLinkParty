@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About us</title>
+    <link rel="stylesheet" href="../style.css"></link>
+    <script src="../jquery.js"></script>
+    <script src="../makeelements.js"></script>
+</head>
+<body>
+    <div id="fakebk">
+    <header>
+        <div>
+            <h1 id="mywritenumber">4897</h1>
+            <input id="connecttext" type="number"><button onclick="">Enter</button>
+        </div>
+
+    </header>
+    <main>
+        <div id="players">
+
+        </div>  
+    </main>
+    <div id="gamebar">
+        <h3>Let's get together!</h3>
+    </div>
+</body>
+<script>
+
+    $(document).ready(()=>{
+        var allplayers = [
+            {
+                name:"Mick",
+                role: "Network Designer",
+                img:"./mick.png",
+                score:8,
+                likes:["Web","Node.js"]
+            },
+            {
+                name:"Theo",
+                role: "Researcher",
+                img:"./theo.jpg",
+                score:13,
+                likes:["Research","Pitch","Presentation","Marketing"]
+            },
+            {
+                name:"Rutger",
+                role: "Unity Engineer",
+                img:"./rutger.jpg",
+                score:15,
+                likes:["NFC","Unity"]
+            },
+            {
+                name:"Teodora",
+                role: "Lead Artist",
+                img:"./teodora.png",
+                score:26,
+                likes:["Stylesheet"]
+            },
+            {
+                name:"Eli",
+                role: "UI Artist",
+                img:"./eli.jpg",
+                score:0,
+                likes:["Wireframe"]
+            },
+            {
+                name:"Presiyan",
+                role: "specific Art",
+                img:"./presiyan.jpg",
+                score:57,
+                likes:["Achievements"]
+            },
+        ]
+        
+
+        allplayers.forEach(element => {
+            createplayer(element)
+        });
+    })
+</script>
+</html>

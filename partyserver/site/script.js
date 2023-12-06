@@ -193,12 +193,7 @@ function createPlayerlist(list,showscores = false){
         if(showscores){score = `[ ${element.score} ]`
         if (element.id == myid) {$('#myscoredisplay').text(`your score: ${element.score}`)}
         }
-        $('#players').append(
-            `<div class='player' style="background-color:${element.color};">
-                <h2>${element.name} ${score}</h2>
-            </div>
-            `
-        )
+        createplayer({img:element.profile,name:element.name,score:element.score,role:""})
     })
 }
 function createPlayerlistfake(){

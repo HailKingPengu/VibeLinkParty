@@ -20,8 +20,8 @@ body {
 
     overflow-y: scroll;
 
-    background: rgb(154,34,80);
-    background: url("texture.png"), linear-gradient(180deg, rgba(154,34,80,1) 0vh, rgba(235,228,0,1) 100vh); 
+    background: rgb(222,71,111);
+    background: url("texture.png"), linear-gradient(180deg, rgba(222,71,111,1) 0%, rgba(236,228,0,0) 100%), #EBE400;
     background-position: center;
     background-repeat: repeat;
 
